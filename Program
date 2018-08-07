@@ -1,0 +1,217 @@
+//Rextester.Program.Main is the entry point for your code. Don't change it.
+//Compiler version 4.0.30319.17929 for Microsoft (R) .NET Framework 4.5
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+namespace Rextester
+{
+    class ConstantInformation
+    {        
+        public string AccountType (int accountTypeID)
+        {
+            string accountName = "Please choose a valid account ID";
+            
+            //Determine which account is being requested
+            if (accountTypeID == 1)
+            {
+                accountName = "Checking";
+            }
+            
+            if (accountTypeID == 2)
+            {
+                accountName = "Corporate Investment";
+            }
+            
+            if (accountTypeID == 3)
+            {
+                accountName = "Individual Investment";
+            }
+            
+            return accountName;
+        }
+        
+        public string AccountOwner (int accountOwnerID)
+        {
+            string ownerName = "Please choose a valid account owner ID";
+            
+            //Determine who the account owner is
+            if (accountOwnerID == 1)
+            {
+                ownerName = "Bob Robert";
+            }
+            
+            if (accountOwnerID == 2)
+            {
+                ownerName = "Mike Michaels";
+            }
+            
+            if (accountOwnerID == 3)
+            {
+                ownerName = "Sally Shells";
+            }
+            
+            return ownerName;
+        }
+    }
+    
+    public class Balances
+    {
+        //Initialize variables
+        decimal maxWithdrawal = 500;
+        decimal checkingBalance = 500;
+        decimal corpInvBalance = 1100;
+        decimal indInvBalance = 1001;
+        
+        public string Deposit(string accountName, string ownerName, decimal depositAmount)
+        {
+            decimal finalBalance = 0;
+            if (accountName == "Checking")
+            {
+                finalBalance = checkingBalance + depositAmount;
+            }
+            
+            if (accountName == "Corporate Investment")
+            {
+                finalBalance = corpInvBalance + depositAmount;
+            }
+            
+            if (accountName == "Individual Investment")
+            {
+                finalBalance = indInvBalance + depositAmount;
+            }
+            
+            return Convert.ToString(finalBalance);
+        }
+        
+        public string Withdraw(string accountName, string ownerName, decimal withdrawalAmount)
+        {
+            //Pre-initialize return variable with error code in case it cannot be properly populated
+            string finalBalance = "Unable to withdraw $";
+            
+            if (accountName == "Individual Investment")
+            {
+                maxWithdrawal = 1000;
+            }
+            
+            if (withdrawalAmount > maxWithdrawal)
+            {
+                return finalBalance;
+            }
+
+            if (accountName == "Checking")
+            {
+                if (withdrawalAmount <= checkingBalance)
+                {
+                    finalBalance = Convert.ToString(checkingBalance - withdrawalAmount);
+                }
+            }
+            
+            if (accountName == "Corporate Investment")
+            {
+                if (withdrawalAmount <= corpInvBalance)
+                {
+                    finalBalance = Convert.ToString(corpInvBalance - withdrawalAmount);
+                }
+            }
+            
+            if (accountName == "Individual Investment")
+            {
+                if (withdrawalAmount > indInvBalance)
+                {
+                    finalBalance = Convert.ToString(indInvBalance - withdrawalAmount);
+                }
+            }
+            
+            return finalBalance;
+        }
+    }
+        
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            //Adjust the following 4 variables for testing
+            //For a transfer, the accountID is the account you're transferring to
+            //Owner ID 1-3 for different people
+            //Account ID 1-3 for different types of accounts
+                //1 = Checking / 2 = Corporate Investment / 3 = Individual Investment
+            int accountID = 2;
+            int ownerID = 2;
+            int transferFromAccountID = 1;
+            decimal transactionAmount = 50;
+            
+            
+            //Initialize variables
+            string transferFromAccountName = "";
+            string finalWithdrawalBalance = "";
+            string finalDepositBalance = "";
+            var constants = new ConstantInformation();
+            var balances = new Balances();
+            string accountName = constants.AccountType(accountID);
+            string ownerName = constants.AccountOwner(ownerID);
+            
+            //Open next line for a transfer
+            transferFromAccountName = constants.AccountType(transferFromAccountID);
+            
+            //Limited error handling 
+            if (accountName == "Please choose a valid account ID" || ownerName == "Please choose a valid account owner ID" || transferFromAccountName == "Please choose a valid account ID")
+            {
+                if (accountName == "Please choose a valid account ID" || transferFromAccountName == "Please choose a valid account ID")
+                {
+                    if (accountName == "Please choose a valid account ID")
+                    {
+                        Console.WriteLine(accountName);
+                    }
+                    else
+                    {
+                        Console.WriteLine(transferFromAccountName);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine(ownerName);
+                }
+            }
+            else
+            {
+                //If withdrawing
+                /*
+                finalWithdrawalBalance = balances.Withdraw(accountName, ownerName, transactionAmount);
+                if (finalWithdrawalBalance == "Unable to withdraw $")
+                {
+                    Console.WriteLine(finalWithdrawalBalance + Convert.ToString(transactionAmount) + "from " + accountName);
+                }
+                else
+                {
+                    Console.WriteLine(ownerName + "'s " + transferFromAccountName + " now has a balance of $" + finalWithdrawalBalance);
+                }
+                */
+                
+                //If depositing
+                /*
+                finalDepositBalance = balances.Deposit(accountName, ownerName, transactionAmount);                
+                Console.WriteLine(ownerName + "'s " + transferFromAccountName + " now has a balance of $" + finalWithdrawalBalance);
+                */
+                
+                //If transferring (tests both withdrawal and deposit)
+                
+                finalWithdrawalBalance = balances.Withdraw(transferFromAccountName, ownerName, transactionAmount);
+                finalDepositBalance = balances.Deposit(accountName, ownerName, transactionAmount);
+                
+                if (finalWithdrawalBalance == "Unable to withdraw $")
+                {
+                    Console.WriteLine(finalWithdrawalBalance + Convert.ToString(transactionAmount) + " from " + transferFromAccountName);
+                }
+                else
+                {
+                    Console.WriteLine(ownerName + "'s " + transferFromAccountName + " now has a balance of $" + finalWithdrawalBalance);
+                    Console.WriteLine(ownerName + "'s " + accountName + " now has a balance of $" + finalDepositBalance);
+                }
+            }
+        }
+        
+    }
+}
